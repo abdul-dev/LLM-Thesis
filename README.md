@@ -1,4 +1,4 @@
-# LLM Thesis: Automated Assignment Question Generation and Evaluation
+# LLM Thesis: Automated Assignment Question Generation and Evaluations Framework
 
 This repository contains a comprehensive pipeline for generating, improving, and evaluating assignment questions using Large Language Models (LLMs). The project demonstrates the complete workflow from raw PDF data extraction to fine-tuned model deployment and evaluation.
 
