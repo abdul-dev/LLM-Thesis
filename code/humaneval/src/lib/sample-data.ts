@@ -1,0 +1,28 @@
+import { Question } from '@/types';
+
+export const sampleQuestions: Question[] = [
+  {
+    id: "1",
+    query: "Design a system to solve a constraint satisfaction problem. Provide a practical code based difficult example of how the system can be used based on CLO Implement classical artificial intelligence techniques.",
+    llmResponse: `A constraint satisfaction problem (CSP) is a type of optimization problem where the goal is to find a solution that satisfies all the constraints. It can be used in a wide range of applications, including scheduling, logistics, and resource allocation. One practical example of a CSP is the classic Sudoku puzzle. A Sudoku puzzle consists of a 9x9 grid with nine 3x3 sub-grids. Each cell in the grid can be filled with either a digit from 1 to 9 or left empty. The puzzle has nine constraints: 1. Each row, column, and sub-grid must contain all of the digits from 1 to 9. 2. Each cell can only be filled with a digit that has not already been used in the same row, column, or sub-grid. The goal of the puzzle is to fill in the empty cells with valid digits such that all of the constraints are satisfied. To solve a Sudoku puzzle using a CSP solver, we can represent the puzzle as a graph. Each cell in the puzzle can be represented as a node in the graph, and each possible digit for that cell can be represented as a label for that node. The edges of the graph can represent the constraints, such as the rows, columns, and sub-grids. The solver can then search for a labeling of the nodes that satisfies all of the constraints. One practical example of how the system can be used is to create a Sudoku generator. The system can be programmed to generate a valid Sudoku puzzle by generating random initial fillings for the cells and then using a CSP solver to check if the puzzle is valid. If the puzzle is not valid, the generator can keep generating new fillings until it finds a valid solution. This system can be useful for creating Sudoku puzzles for educational or recreational purposes.`,
+    finetunedResponse: `A constraint satisfaction problem (CSP) is a problem where we need to find an assignment of values to variables that satisfies a set of constraints. The CSP can be represented as a graph where nodes represent variables and edges represent constraints.\n
+a) Define the CSP problem and explain its application in real-world scenarios.\n
+b) Implement a Python class to represent the CSP graph, including methods to add variables, constraints, and check satisfiability.\n
+c) Implement a constraint propagation algorithm (e.g., arc consistency) to optimize the CSP solving process.\n
+d) Extend your solution to support weighted constraints and explain how to handle conflicts between constraints.\ne) Analyze the performance of your implementation using a benchmark dataset and provide recommendations for optimization.\n
+The CSP problem is a fundamental problem in artificial intelligence and has applications in various domains, such as scheduling, planning, and optimization.\n*
+The constraint propagation algorithm is a crucial component of CSP solving, as it helps to eliminate inconsistent assignments and reduce the search space.\n*Weighted constraints introduce an additional`
+  },
+  {
+    id: "2",
+    query: "Explain the concept of machine learning and its applications in natural language processing.",
+    llmResponse: "Machine learning is a subset of artificial intelligence that focuses on developing systems that can learn from and make decisions based on data. In natural language processing (NLP), machine learning algorithms are used to process and analyze large amounts of natural language data. Applications include sentiment analysis, machine translation, text classification, and question answering systems. These systems learn patterns from training data to make predictions or decisions without being explicitly programmed to perform the task.",
+    finetunedResponse: "Machine learning in NLP involves training models to understand and generate human language. Key applications include:\n1. Text Classification\n2. Named Entity Recognition\n3. Machine Translation\n4. Sentiment Analysis\n5. Question Answering\nThe models learn from labeled data to make predictions about new, unseen text."
+  },
+  {
+    id: "3",
+    query: "Describe the principles of object-oriented programming and provide examples of its implementation.",
+    llmResponse: "Object-oriented programming (OOP) is a programming paradigm based on the concept of 'objects', which can contain data and code. The four main principles of OOP are:\n1. Encapsulation: Bundling of data and methods that operate on that data\n2. Inheritance: Creating new classes from existing ones\n3. Polymorphism: Ability to process objects differently based on their data type\n4. Abstraction: Hiding complex implementation details\n\nExample implementation in Python:\nclass Animal:\n    def __init__(self, name):\n        self.name = name\n    def speak(self):\n        pass\n\nclass Dog(Animal):\n    def speak(self):\n        return f'{self.name} says Woof!'",
+    finetunedResponse: "OOP principles guide software design and development:\n\n1. Encapsulation\n- Data hiding\n- Access modifiers\n- Getter/setter methods\n\n2. Inheritance\n- Single inheritance\n- Multiple inheritance\n- Method overriding\n\n3. Polymorphism\n- Method overloading\n- Method overriding\n- Interface implementation\n\n4. Abstraction\n- Abstract classes\n- Interfaces\n- Implementation hiding"
+  }
+]; 
