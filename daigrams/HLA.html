@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Assignment Generation Pipeline</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f8fafc;
+      margin: 0;
+      padding: 32px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 24px;
+      color: #344054;
+    }
+
+    h2 {
+      margin: 0;
+      color: #1d4ed8;
+      font-size: 1.4rem;
+      text-align: center;
+    }
+
+    .flow {
+      display: flex;
+      flex-wrap: nowrap;
+      gap: 24px;
+      overflow-x: auto;
+      padding-bottom: 20px;
+    }
+
+    .step {
+      background: #fff;
+      border-left: 6px solid #1d4ed8;
+      border-radius: 8px;
+      min-width: 180px;
+      box-shadow: 0 3px 6px rgba(0, 0, 0, 0.05);
+      padding: 14px 16px;
+      font-size: 0.78rem;
+      line-height: 1.4;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .step h3 {
+      margin: 0 0 10px;
+      font-size: 1rem;
+      font-weight: 600;
+      color: #1d4ed8;
+    }
+
+    .icon {
+      font-size: 1.1rem;
+      margin-right: 4px;
+    }
+
+    .arrow {
+      align-self: center;
+      position: relative;
+      width: 40px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+    }
+
+    .arrow::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 100%;
+      height: 2px;
+      background: #1d4ed8;
+    }
+
+    .arrow::after {
+      content: '';
+      position: absolute;
+      right: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 0;
+      height: 0;
+      border-top: 6px solid transparent;
+      border-bottom: 6px solid transparent;
+      border-left: 8px solid #1d4ed8;
+    }
+
+    .highlight {
+      background: #e0f2fe;
+      border-left-color: #0284c7;
+    }
+
+    .sub-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 10px;
+      width: 100%;
+    }
+
+    .sub-step {
+      background: #f1f5f9;
+      border-left: 4px solid #94a3b8;
+      border-radius: 6px;
+      padding: 8px;
+    }
+
+    .sub-step h4 {
+      margin: 0 0 4px;
+      font-size: 0.78rem;
+      color: #1e293b;
+    }
+
+    .sub-step p {
+      margin: 0;
+      font-size: 0.72rem;
+    }
+  </style>
+</head>
+<body>
+
+<h2>Assignment Generation Pipeline</h2>
+
+<div class="flow">
+
+  <!-- 1. DATA PREP -->
+  <div class="step">
+    <h3><span class="icon">📚</span>Data Collection</h3>
+    <div class="sub-steps">
+        <div class="sub-step">
+            <h4>Collect HEC books</h4>
+            <p>Split into context-aware blocks</p>
+          </div>
+          <div class="sub-step">
+            <h4>Collect CLOs from HEC books</h4>
+            <p>Split into context-aware blocks</p>
+          </div>
+      <div class="sub-step">
+        <h4>Chunking</h4>
+        <p>Split into context-aware blocks</p>
+      </div>
+      <div class="sub-step">
+        <h4>Cleaning</h4>
+        <p>Remove noise, normalize text</p>
+      </div>
+    </div>
+  </div>
+  <div class="arrow"></div>
+
+  <!-- 2. QUESTION GEN -->
+  <div class="step">
+    <h3><span class="icon">🤖</span>Data-Generation (LLM)</h3>
+    <div class="sub-steps">
+      <div class="sub-step">
+        <h4>Prompt on chunks</h4>
+        <p>Apply LLM prompts to text chunks</p>
+      </div>
+      <div class="sub-step">
+        <h4>Generate questions</h4>
+        <p>Create diverse question types and attach CLOs</p>
+      </div>
+    
+      
+      <div class="sub-step">
+        <h4>Build dataset</h4>
+        <p>Compile training data</p>
+      </div>
+      <div class="sub-step">
+        <h4>Human Review</h4>
+        <p>Publish on Argilla for human review</p>
+      </div>
+    </div>
+  </div>
+  <div class="arrow"></div>
+
+  <!-- 3. FINE-TUNING -->
+  <div class="step">
+    <h3><span class="icon">🛠️</span>Fine-Tune</h3>
+    <div class="sub-steps">
+      <div class="sub-step">
+        <h4>Train LLM on dataset</h4>
+        <p>Fine-tune model on generated data</p>
+      </div>
+      <div class="sub-step">
+        <h4>Use LoRA / QLoRA</h4>
+        <p>Parameter-efficient training</p>
+      </div>
+      <div class="sub-step">
+        <h4>4-bit quantization</h4>
+        <p>Reduce memory footprint</p>
+      </div>
+      <div class="sub-step">
+        <h4>Model Saved</h4>
+        <p>Exported model</p>
+      </div>
+    </div>
+  </div>
+  <div class="arrow"></div>
+
+  <!-- 4. EVALUATION -->
+  <div class="step highlight">
+    <h3><span class="icon">🧪</span>Evaluation</h3>
+    <div class="sub-steps">
+      <div class="sub-step">
+        <h4>LLM-as-Judge</h4>
+        <p>Score base vs fine-tuned responses</p>
+      </div>
+      <div class="sub-step">
+        <h4>Code Execution</h4>
+        <p>Run & test generated code blocks</p>
+      </div>
+      <div class="sub-step">
+        <h4>Human Review</h4>
+        <p>Experts score questions via Argilla</p>
+      </div>
+    </div>
+  </div>
+  <div class="arrow"></div>
+
+  <!-- 5. ASSIGNMENT API -->
+  <div class="step">
+    <h3><span class="icon">🚀</span>Question Generation</h3>
+    <div class="sub-steps">
+      <div class="sub-step">
+        <h4>Input: query + CLO</h4>
+        <p>Receive user requests</p>
+      </div>
+      <div class="sub-step">
+        <h4>Return: aligned questions</h4>
+        <p>Generate relevant questions</p>
+      </div>
+      
+      <div class="sub-step">
+        <h4>Number of questions loop</h4>
+        <p>Iterate to generate multiple questions</p>
+      </div>
+      <div class="sub-step">
+        <h4>Export as PDF/JSON</h4>
+        <p>Format output for users</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>
