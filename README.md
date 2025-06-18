@@ -1,6 +1,6 @@
-# LLM Thesis: Automated Assignment Question Generation and Evaluations Framework
+# LLM Thesis: Automated Assignment Question Generation and Evaluation
 
-This repository contains a comprehensive pipeline for generating, improving, and evaluating assignment questions using Large Language Models (LLMs). The project demonstrates the complete workflow from raw PDF data extraction to fine-tuned model deployment and evaluation.
+This repository contains a comprehensive pipeline for generating, improving, and evaluating assignment questions using Large Language Models (LLMs). The project demonstrates the complete workflow from raw PDF data extraction to fine-tuned model deployment and evaluation, with integrated data annotation using Argilla.
 
 ## 📋 Table of Contents
 
@@ -11,6 +11,7 @@ This repository contains a comprehensive pipeline for generating, improving, and
 - [Workflow Steps](#workflow-steps)
 - [Usage Instructions](#usage-instructions)
 - [Evaluation Framework](#evaluation-framework)
+- [Argilla Integration](#argilla-integration)
 - [Results and Outputs](#results-and-outputs)
 - [Troubleshooting](#troubleshooting)
 
@@ -24,6 +25,7 @@ This project implements an end-to-end system for:
 5. **Model Fine-tuning**: Training custom models on the generated data
 6. **Performance Comparison**: Comparing base vs fine-tuned models
 7. **Code Evaluation**: Automated code generation and testing
+8. **Data Annotation**: Using Argilla for human-in-the-loop evaluation
 
 ## 📁 Project Structure
 
@@ -36,6 +38,10 @@ code/
 ├── 5_SGenMistral_Nemo_Base_2407_bnb_finetuning_Working.ipynb  # Model fine-tuning
 ├── 6_NormalVSFinetune_Compare.ipynb            # Performance comparison
 ├── 7_CodeEvalAgent.ipynb                       # Code evaluation agent
+├── argilla_annotation/                          # Argilla data annotation setup
+│   ├── annotation_interface.py                 # Custom annotation interface
+│   ├── dataset_preparation.py                  # Dataset preparation for annotation
+│   └── evaluation_metrics.py                   # Evaluation metrics calculation
 └── humaneval/                                   # Evaluation framework (Next.js app)
     ├── src/
     ├── public/
@@ -50,6 +56,7 @@ code/
 - API Keys:
   - Together AI API Key
   - OpenAI API Key (for code evaluation)
+- Argilla Server (for data annotation)
 
 ## 📦 Installation
 
@@ -65,6 +72,9 @@ pip install together pymupdf reportlab
 pip install bitsandbytes accelerate xformers peft trl triton
 pip install unsloth sentencepiece protobuf datasets huggingface_hub
 pip install openai gradio fpdf PyPDF2
+
+# Install Argilla for data annotation
+pip install argilla[server]
 ```
 
 ### 2. API Key Configuration
@@ -78,6 +88,20 @@ TOGETHER_API_KEY = userdata.get('TOGETHER_API_KEY')
 
 # For OpenAI
 OPENAI_API_KEY = userdata.get('OPENAI')
+
+# For Argilla
+import argilla as rg
+rg.init(api_key="your_argilla_api_key", api_url="http://localhost:6900")
+```
+
+### 3. Argilla Server Setup
+
+```bash
+# Start Argilla server
+argilla server start
+
+# Or using Docker
+docker run -d --name argilla -p 6900:6900 argilla/argilla-server:latest
 ```
 
 ## 🔄 Workflow Steps
@@ -228,6 +252,126 @@ query = "Write a function to calculate factorial"
 auto_chain_agent(query, max_retries=3)
 ```
 
+## 🏷️ Argilla Integration
+
+### Data Annotation Workflow
+
+Argilla is integrated throughout the pipeline for human-in-the-loop evaluation and data quality assurance.
+
+#### Setup Argilla Dataset
+
+```python
+import argilla as rg
+from argilla import TextClassificationRecord
+
+# Create dataset for question quality evaluation
+def create_annotation_dataset(questions):
+    records = []
+    for i, question in enumerate(questions):
+        record = TextClassificationRecord(
+            text=question["Question"],
+            metadata={
+                "topic": question["Topic"],
+                "difficulty": question["Difficulty"],
+                "type": question["Type"],
+                "clo": question["CLO"]
+            },
+            annotation=None,  # Will be filled by annotators
+            id=i
+        )
+        records.append(record)
+    
+    # Push to Argilla
+    dataset = rg.DatasetForTextClassification(records)
+    rg.log(dataset, name="question_quality_evaluation")
+```
+
+#### Custom Annotation Interface
+
+```python
+# argilla_annotation/annotation_interface.py
+import argilla as rg
+from argilla import TextClassificationRecord
+
+class QuestionQualityAnnotator:
+    def __init__(self, dataset_name="question_quality_evaluation"):
+        self.dataset_name = dataset_name
+        
+    def create_annotation_task(self, questions):
+        """Create annotation task for question quality evaluation"""
+        records = []
+        for question in questions:
+            record = TextClassificationRecord(
+                text=question["Question"],
+                metadata={
+                    "topic": question["Topic"],
+                    "difficulty": question["Difficulty"],
+                    "type": question["Type"]
+                },
+                annotation=None
+            )
+            records.append(record)
+        
+        dataset = rg.DatasetForTextClassification(records)
+        rg.log(dataset, name=self.dataset_name)
+        
+    def get_annotated_data(self):
+        """Retrieve annotated data from Argilla"""
+        dataset = rg.load(self.dataset_name)
+        return dataset
+        
+    def calculate_quality_metrics(self):
+        """Calculate quality metrics from annotations"""
+        dataset = self.get_annotated_data()
+        # Calculate metrics like agreement, quality scores, etc.
+        return metrics
+```
+
+#### Evaluation Metrics
+
+```python
+# argilla_annotation/evaluation_metrics.py
+import pandas as pd
+import numpy as np
+
+def calculate_annotation_metrics(annotated_dataset):
+    """Calculate various metrics from Argilla annotations"""
+    
+    # Inter-annotator agreement
+    agreement_scores = calculate_agreement(annotated_dataset)
+    
+    # Quality distribution
+    quality_distribution = calculate_quality_distribution(annotated_dataset)
+    
+    # Topic-wise quality analysis
+    topic_quality = analyze_topic_quality(annotated_dataset)
+    
+    return {
+        "agreement_scores": agreement_scores,
+        "quality_distribution": quality_distribution,
+        "topic_quality": topic_quality
+    }
+
+def create_evaluation_report(metrics):
+    """Generate comprehensive evaluation report"""
+    report = {
+        "summary": {
+            "total_questions": len(metrics["quality_distribution"]),
+            "average_quality_score": np.mean(metrics["quality_distribution"]),
+            "agreement_rate": metrics["agreement_scores"]["overall"]
+        },
+        "detailed_analysis": metrics
+    }
+    return report
+```
+
+### Integration Points
+
+1. **Post-Generation Quality Check**: After Step 1, use Argilla to evaluate initial question quality
+2. **Pre-Fine-tuning Validation**: Before Step 5, validate dataset quality through human annotation
+3. **Post-Fine-tuning Evaluation**: After Step 6, compare human evaluations of base vs fine-tuned outputs
+4. **Continuous Improvement**: Use Argilla feedback to improve prompts and model performance
+
 ## 🎯 Evaluation Framework
 
 ### HumanEval Dashboard
@@ -247,6 +391,17 @@ npm run dev
 - Performance metrics visualization
 - User feedback collection
 - Export capabilities
+- Integration with Argilla annotations
+
+### Argilla Dashboard
+**Access**: `http://localhost:6900`
+
+**Features**:
+- Custom annotation interfaces
+- Quality control workflows
+- Inter-annotator agreement analysis
+- Export annotated datasets
+- Integration with Hugging Face datasets
 
 ## 📊 Results and Outputs
 
@@ -257,12 +412,15 @@ npm run dev
 - `formatted_question_generation_dataset.json` - Fine-tuning dataset
 - `together_ai_responses.pdf/csv` - Comparison results
 - `generated_code.py` - Generated code examples
+- `argilla_annotations.json` - Human annotations and quality scores
 
 ### Performance Metrics
-- Question quality scores
+- Question quality scores (human-annotated)
 - Model response accuracy
 - Code execution success rates
 - Fine-tuning efficiency metrics
+- Inter-annotator agreement rates
+- Topic-wise quality analysis
 
 ## 🚨 Troubleshooting
 
@@ -283,6 +441,11 @@ npm run dev
    - Verify model compatibility
    - Update dependencies
 
+4. **Argilla Connection Issues**
+   - Verify server is running on correct port
+   - Check API key configuration
+   - Ensure network connectivity
+
 ### Performance Optimization
 
 1. **Memory Management**
@@ -294,6 +457,11 @@ npm run dev
    - Use Unsloth framework
    - Implement batch processing
    - Optimize data loading
+
+3. **Annotation Efficiency**
+   - Use pre-annotation with model predictions
+   - Implement active learning strategies
+   - Batch annotation tasks
 
 ## 📝 Usage Instructions
 
@@ -307,6 +475,9 @@ npm run dev
    # Set API keys
    export TOGETHER_API_KEY="your_key_here"
    export OPENAI_API_KEY="your_key_here"
+   
+   # Start Argilla server
+   argilla server start
    ```
 
 2. **Run Complete Pipeline**:
@@ -316,6 +487,11 @@ npm run dev
    jupyter notebook 2_cleaner_Local.ipynb
    jupyter notebook 3_DataImprover.ipynb
    jupyter notebook 4_HEC_togh_attach_Topics.ipynb
+   
+   # Setup Argilla annotation
+   python argilla_annotation/dataset_preparation.py
+   
+   # Continue with fine-tuning
    jupyter notebook 5_SGenMistral_Nemo_Base_2407_bnb_finetuning_Working.ipynb
    jupyter notebook 6_NormalVSFinetune_Compare.ipynb
    jupyter notebook 7_CodeEvalAgent.ipynb
@@ -323,6 +499,10 @@ npm run dev
 
 3. **Evaluate Results**:
    ```bash
+   # Access Argilla dashboard
+   # Open http://localhost:6900
+   
+   # Access HumanEval dashboard
    cd humaneval
    npm run dev
    # Open http://localhost:3000
@@ -334,6 +514,7 @@ npm run dev
 - **Dataset Size**: Adjust `trainSize` parameters for different dataset splits
 - **Question Types**: Modify prompts for different question categories
 - **Evaluation Metrics**: Add custom metrics in evaluation notebooks
+- **Annotation Workflows**: Customize Argilla interfaces for specific evaluation needs
 
 ## 🤝 Contributing
 
@@ -353,6 +534,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 - Unsloth for the efficient fine-tuning framework
 - OpenAI for the code evaluation capabilities
 - Hugging Face for the model hosting and datasets
+- Argilla for the data annotation and evaluation platform
 
 ---
 
