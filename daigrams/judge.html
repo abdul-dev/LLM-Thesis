@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LLM Evaluation Flow - KPIs Fixed</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      background: #f5f7fa;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+    }
+    .flow-container {
+      display: flex;
+      flex-direction: row;
+      gap: 20px;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .step, .parallel-step, .small-chart {
+      background: white;
+      padding: 12px;
+      border-radius: 8px;
+      border: 2px solid #007acc;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+      text-align: center;
+      opacity: 0;
+      transform: translateX(-30px);
+      animation: appear 1s forwards;
+      position: relative;
+      min-width: 140px;
+      font-size: 13px;
+    }
+
+    @keyframes appear {
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    .arrow {
+      width: 0; 
+      height: 0; 
+      border-top: 8px solid transparent;
+      border-bottom: 8px solid transparent;
+      border-left: 12px solid #007acc;
+      opacity: 0;
+      animation: fadeIn 0.5s forwards;
+    }
+
+    @keyframes fadeIn {
+      to {
+        opacity: 1;
+      }
+    }
+
+    .parallel-block {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      opacity: 0;
+      animation: appear 1s forwards;
+    }
+
+    .parallel-step {
+      padding: 15px;
+      animation: appear 1s forwards;
+    }
+
+    .kpi {
+      font-size: 11px;
+      background: #e6f7ff;
+      padding: 4px;
+      margin-top: 5px;
+      border-radius: 5px;
+      border: 1px dashed #007acc;
+    }
+
+    .loader {
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid #007acc;
+      border-radius: 50%;
+      width: 16px;
+      height: 16px;
+      animation: spin 1s linear infinite;
+      margin: 8px auto 0;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg);}
+      100% { transform: rotate(360deg);}
+    }
+
+    .small-chart canvas {
+      width: 340px !important;
+      height: 200px !important;
+      margin-top: 5px;
+    }
+
+    footer {
+      margin-top: 20px;
+      font-size: 0.8em;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+
+  <h2> 🧑‍⚖️ LLM-As-A-Judge Evaluation Flow</h2>
+  <div class="flow-container">
+    <div class="step">📄<br>Load CSV</div>
+    <div class="arrow"></div>
+    <div class="parallel-block">
+      <div class="parallel-step">
+        🤖<br>Normal LLM Query Response
+      </div>
+      <div class="parallel-step">
+        🎯<br>Fine-Tuned LLM Query Response<br>LLM (CSV)
+      </div>
+    </div>
+    <div class="arrow"></div>
+    <div class="parallel-block">
+      <div class="parallel-step">
+        🧑‍⚖️<br>Judge<br>DeepSeek-R1 Distill LLmma 70B
+        <div class="kpi">Relevance: 6.5/10<br>Clarity: 6.0/10</div>
+
+      </div>
+      <div class="parallel-step">
+        🧑‍⚖️<br>Judge<br>DeepSeek-R1 Distill LLmma 70B
+        <div class="kpi">Relevance: 8.5/10<br>Clarity: 8.2/10</div>
+      </div>
+    </div>
+    <div class="arrow"></div>
+    <div class="step">📊<br>Compare %</div>
+    <div class="arrow"></div>
+    <div class="step">💡<br>Verdict</div>
+    <div class="arrow"></div>
+    <div class="small-chart">
+      📈 KPI Chart<br>
+      <canvas id="miniChart"></canvas>
+    </div>
+  </div>
+
+  <footer>
+    <strong>Evaluation Criteria (Out of 10 for each metric):</strong><br><br>
+     <strong>Relevance:</strong> Does the response align with the question and CLO?<br>
+     <strong>Clarity:</strong> Is it well-structured and easy to understand?<br>
+     <strong>Conciseness:</strong> Does it avoid unnecessary details while being informative?<br>
+     <strong>Fluency:</strong> Is it grammatically correct and coherent?<br>
+     <strong>Assignment Suitability:</strong> Not Suitable if it's just explaining and Does it just give a solution to the problem?<br>
+     <strong>Overall Score:</strong> Weighted score based on all metrics.
+  </footer>
+
+  <script>
+    const ctx = document.getElementById('miniChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ['Relevance', 'Clarity'],
+        datasets: [
+          {
+            label: 'Normal LLM',
+            data: [6.5, 6.0],
+            backgroundColor: '#7FB3D5'
+          },
+          {
+            label: 'Fine-Tuned LLM',
+            data: [8.5, 8.2],
+            backgroundColor: '#2E86C1'
+          }
+        ]
+      },
+      options: {
+        responsive: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: { enabled: true }
+        },
+        scales: {
+          x: { display: true },
+          y: { display: true, min: 0, max: 10, ticks: { stepSize: 2 } }
+        }
+      }
+    });
+  </script>
+
+</body>
+</html>

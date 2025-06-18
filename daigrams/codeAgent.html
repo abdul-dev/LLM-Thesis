@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Chained Code Generation & Review - Animated Flow</title>
+  <style>
+    body {
+      background: #f5f7fa;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      padding: 20px;
+    }
+    .flow-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+    .step {
+      padding: 12px;
+      border-radius: 10px;
+      border: 2px solid #333;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      text-align: center;
+      min-width: 160px;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: appear 0.8s forwards;
+      font-size: 13px;
+    }
+
+    .step:nth-child(1) { animation-delay: 0.2s; }
+    .step:nth-child(3) { animation-delay: 0.4s; }
+    .step:nth-child(5) { animation-delay: 0.6s; }
+    .step:nth-child(7) { animation-delay: 0.8s; }
+    .step:nth-child(9) { animation-delay: 1.0s; }
+    .step:nth-child(11) { animation-delay: 1.2s; }
+    .step:nth-child(13) { animation-delay: 1.4s; }
+    .step:nth-child(15) { animation-delay: 1.6s; }
+
+    @keyframes appear {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .apiClass { background: #f9d6d2; border-color: #d64161; }
+    .agentClass { background: #d2e7f9; border-color: #4161d6; }
+    .processClass { background: #d2f9d6; border-color: #41d661; }
+    .outputClass { background: #f9f9d2; border-color: #d6d641; }
+
+    .arrow {
+      font-size: 24px;
+      animation: fadeIn 0.8s forwards;
+      opacity: 0;
+    }
+    @keyframes fadeIn {
+      to { opacity: 1; }
+    }
+
+    .group-title {
+      margin-top: 30px;
+      font-weight: bold;
+      color: #333;
+    }
+
+    footer {
+      margin-top: 30px;
+      font-size: 0.8em;
+      color: #777;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>🤖 A multi-agent framework for Generating, Testing, Refining, and Reviewing code</h2>
+
+  <div class="flow-container">
+    <div class="step">👤<br>User Query</div>
+    <div class="arrow">➡️</div>
+
+    <div class="step agentClass">🤖<br>Chained Code Agent</div>
+    <div class="arrow">➡️</div>
+
+    <div class="step agentClass">🤖<br>Auto Chain Agent</div>
+    <div class="arrow">➡️</div>
+
+    <div class="step agentClass">📝<br>Generate Code</div>
+    <div class="arrow">➡️</div>
+
+    <div class="step processClass">🚀<br>Safe Execute</div>
+    <div class="arrow">➡️</div>
+
+    <div class="step outputClass">✅<br>Return Code & Result</div>
+  </div>
+
+  <div class="group-title">🔁 Retry Mechanism (on Failure)</div>
+  <div class="flow-container">
+    <div class="step processClass">❌<br>Error Feedback</div>
+    <div class="arrow">🔁</div>
+
+    <div class="step processClass">🚀<br>Safe Execute Retry</div>
+  </div>
+
+  <div class="group-title">🔍 Code Review Process</div>
+  <div class="flow-container">
+    <div class="step agentClass">🔎<br>Code Review Agent</div>
+    <div class="arrow">➡️</div>
+
+    <div class="step apiClass">🌐<br>OpenAI API - Code Review</div>
+    <div class="arrow">➡️</div>
+
+    <div class="step outputClass">📄<br>Review Report</div>
+  </div>
+
+  <div class="group-title">💾 Final Outputs</div>
+  <div class="flow-container">
+    <div class="step outputClass">💾<br>Generated Code (py)</div>
+    <div class="arrow">➡️</div>
+
+    <div class="step outputClass">📄<br>Review Report (md)</div>
+    <div class="arrow">➡️</div>
+
+    <div class="step outputClass">🎯<br>Complete Chain Output</div>
+  </div>
+
+  <footer>API calls, agents, process steps, and outputs are visually styled and animated</footer>
+
+</body>
+</html>
